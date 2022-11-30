@@ -33,17 +33,18 @@ with open('./Data/RELEVAMIENTO DE AULAS - AULA.csv') as csv_file:
 
 sortedList_aulas = sorted(aulas, key=lambda x: x.capacidad)  
 
-for aula in sortedList_aulas:
-    aula.imprimir_info()
+# for aula in sortedList_aulas:
+#     aula.imprimir_info()
 
 fecha_prueba = datetime.date(2022,12,12)
 
-# for aula in sortedList_aulas:
-#     for examen in sortedList:
-#         print(fecha_prueba)
-#         exam_date = (datetime.date(examen.fecha.year, examen.fecha.month, examen.fecha.day))
-#         if aula.capacidad >= examen.inscriptos :
-#             print("cumple condicion 1")
-            # if datetime.date(examen.fecha) == fecha_prueba:
-            #     print("cumple condicion 2 tambien")
-
+count = 0
+for aula in sortedList_aulas:
+    for examen in sortedList:
+        exam_date = (datetime.date(examen.fecha.year, examen.fecha.month, examen.fecha.day))
+        if not examen.correctamente_asignado and aula.capacidad >= examen.inscriptos and examen.fecha == fecha_prueba:
+            count +=1
+            examen.asignar()
+            print(f"codigo: {examen.codigo}, materia: {examen.materia}")
+            # print("cumple condicion 1")
+print(count)

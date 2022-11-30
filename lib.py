@@ -23,5 +23,8 @@ class _Examen:
         self.inscriptos = inscriptos
         self.correctamente_asignado = False
 
+    def asignar(self):
+        self.correctamente_asignado = True
+
     def imprimir_info(self):
         print(f'codigo: {self.codigo}, materia: {self.materia}, mesa: {self.mesa}, fecha: {self.fecha}, hora: {self.hora}, incriptos: {self.inscriptos}')
