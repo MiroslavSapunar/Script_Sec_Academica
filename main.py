@@ -3,27 +3,41 @@ import datetime
 import random
 from lib import _Examen, _Aula
 
-examenes = []
-with open('./Data/Dic 2022 - Feb-Mar 2023-Table 1.csv') as csv_file:
+codigos = []
+with open('./Data/codigos_materias.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=';')
     next(csv_reader)
     for row in csv_reader:
-            examenes.append(
-                _Examen(row[0], row[1], row[2], row[5], row[6], random.randrange(15, 110))
-            )
+            codigos.append(row[0])
+
+# for codigo in codigos:
+#     print(codigo)
+
+december = datetime.date(2022,12,31)
+
+examenes = []
+# with open('./Data/Dic 2022 - Feb-Mar 2023-Table 1.csv') as csv_file:
+# with open('./Data/Dic 2022.csv') as csv_file:
+with open('./Data/Mesas_12_2022-03_2023.csv') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    next(csv_reader)
+    for row in csv_reader:
+            if datetime.datetime.date(datetime.datetime.strptime(row[3], "%d/%m/%Y")) <= december:
+                if any(row[0] == codigo for codigo in codigos):
+                    examenes.append(
+                        _Examen(row[0], row[1], row[2], row[3], row[4], random.randrange(15, 110), any(row[0] == codigo for codigo in codigos))
+                    )
 
 temp_sorted_list = sorted(examenes, key=lambda x: (x.inscriptos), reverse= True)
 sortedList = sorted(temp_sorted_list, key=lambda x: (x.fecha, x.hora))
 
-# print("cantidad de examenes cargados: ",len(examenes))
-# print("cantidad de examenes cargados: ",len(sortedList))
-
+print(f'cantidad examenes: {len(sortedList)}')
 # for examen in sortedList:
 #     examen.imprimir_info()
 
-
 aulas = []
-with open('./Data/RELEVAMIENTO DE AULAS - AULA.csv') as csv_file:
+# with open('./Data/RELEVAMIENTO DE AULAS - AULA.csv') as csv_file:
+with open('./Data/RELEVAMIENTO DE AULAS - AULA_2.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     next(csv_reader)
     for row in csv_reader:
@@ -33,18 +47,40 @@ with open('./Data/RELEVAMIENTO DE AULAS - AULA.csv') as csv_file:
 
 sortedList_aulas = sorted(aulas, key=lambda x: x.capacidad)  
 
+print(f'cantidad aulas: {len(sortedList_aulas)}')
 # for aula in sortedList_aulas:
 #     aula.imprimir_info()
 
 fecha_prueba = datetime.date(2022,12,12)
 
-count = 0
-for aula in sortedList_aulas:
-    for examen in sortedList:
+no_asignados = []
+for examen in sortedList:
+    for aula in sortedList_aulas:
         exam_date = (datetime.date(examen.fecha.year, examen.fecha.month, examen.fecha.day))
-        if not examen.correctamente_asignado and aula.capacidad >= examen.inscriptos and examen.fecha == fecha_prueba:
-            count +=1
-            examen.asignar()
-            print(f"codigo: {examen.codigo}, materia: {examen.materia}")
-            # print("cumple condicion 1")
-print(count)
+        if not examen.esta_asignado() and examen.lh() and ( aula.capacidad / examen.inscriptos >= 0.85):
+            aula.registrar_examen(examen)
+
+print("ASIGNADOS")
+
+for aula in sortedList_aulas:
+    aula.imprimir_info()
+
+print("NO ASIGNADOS")
+
+
+
+count_asignados = 0
+count_no_asignados = 0
+for examen in sortedList:
+    if examen.esta_asignado():
+        count_asignados += 1
+    else:
+        examen.imprimir_info()
+        count_no_asignados += 1
+
+
+print("ASIGNADOS:")
+print(count_asignados)
+print("NO ASIGNADOS:")
+print(count_no_asignados)
+
