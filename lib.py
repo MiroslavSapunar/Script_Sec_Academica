@@ -1,5 +1,16 @@
 from datetime import datetime, timedelta
 
+class _Day:
+    def __init__(self, date = "NULL", count = 0):
+        self.date = date
+        self.count = count
+
+    def imprimir_info(self):
+        print(f'Fecha y hora: {self.date}, count: {self.count}')
+    
+    def cantidad(self):
+        return self.count
+
 class _Aula:
     def __init__(self, piso, numero, capacidad):
         self.piso = piso
@@ -31,7 +42,8 @@ class _Aula:
 
 class _Examen:
     def __init__(self, codigo = 'XXXX', materia = 'NULA', mesa = "NULA",fecha = '01/01/2000', hora = '00:00:01 AM', inscriptos = 0, es_lh = False):
-        fecha_completa = datetime.strptime(fecha+hora, "%d/%m/%Y%I:%M:%S %p")
+        # fecha_completa = datetime.strptime(fecha+hora, "%m/%d/%Y%I:%M:%S %p")
+        fecha_completa = datetime.strptime(fecha + "-" + hora, "%m/%d/%Y-%H:%M")
         self.materia = materia
         self.codigo = codigo
         self.mesa = mesa
@@ -52,7 +64,6 @@ class _Examen:
 
     def fecha_hora(self):
         return datetime.combine(self.fecha, self.hora)
-
 
     def imprimir_info(self):
         print(f'codigo: {self.codigo}, materia: {self.materia}, mesa: {self.mesa}, fecha: {self.fecha}, hora: {self.hora}, incriptos: {self.inscriptos}, asignado: {self.asignado}, LH: {self.es_lh}')
